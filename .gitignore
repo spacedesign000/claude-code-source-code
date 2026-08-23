@@ -1,2 +1,18 @@
 node_modules/
 CLAUDE.md
+
+# Local credentials and provider configuration
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Generated quality artifacts
+coverage/
+readiness-report*.json
+policy-report*.json
+
+# Local operating-system files
+.DS_Store
+Thumbs.db
