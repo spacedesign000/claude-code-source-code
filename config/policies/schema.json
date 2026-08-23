@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nurt.chat/schemas/agent-policy-v1.json",
+  "title": "NURT.CHAT Agent Policy",
+  "description": "Versioned policy contract for filesystem, shell, network and tool decisions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "defaultProfile",
+    "profiles"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "defaultProfile": {
+      "$ref": "#/$defs/profileName"
+    },
+    "profiles": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/profileName"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/profile"
+      }
+    }
+  },
+  "$defs": {
+    "profileName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,31}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "confirm",
+        "deny"
+      ]
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      },
+      "uniqueItems": true
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "filesystem",
+        "shell",
+        "network",
+        "tools"
+      ],
+      "properties": {
+        "description": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "filesystem": {
+          "$ref": "#/$defs/filesystem"
+        },
+        "shell": {
+          "$ref": "#/$defs/shell"
+        },
+        "network": {
+          "$ref": "#/$defs/network"
+        },
+        "tools": {
+          "$ref": "#/$defs/tools"
+        }
+      }
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outsideProject",
+        "read",
+        "write",
+        "deny"
+      ],
+      "properties": {
+        "outsideProject": {
+          "$ref": "#/$defs/decision"
+        },
+        "read": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "write": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "deny": {
+          "$ref": "#/$defs/uniqueStrings"
+        }
+      }
+    },
+    "shell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defaultDecision",
+        "allow",
+        "deny"
+      ],
+      "properties": {
+        "defaultDecision": {
+          "$ref": "#/$defs/decision"
+        },
+        "allow": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "deny": {
+          "$ref": "#/$defs/uniqueStrings"
+        }
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defaultDecision",
+        "allowHosts",
+        "denyHosts",
+        "denyPrivateRanges"
+      ],
+      "properties": {
+        "defaultDecision": {
+          "$ref": "#/$defs/decision"
+        },
+        "allowHosts": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "denyHosts": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "denyPrivateRanges": {
+          "const": true
+        }
+      }
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defaultDecision",
+        "rules"
+      ],
+      "properties": {
+        "defaultDecision": {
+          "$ref": "#/$defs/decision"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/toolRule"
+          }
+        }
+      }
+    },
+    "toolRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool",
+        "decision"
+      ],
+      "properties": {
+        "tool": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "decision": {
+          "$ref": "#/$defs/decision"
+        },
+        "when": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}
