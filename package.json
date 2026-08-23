@@ -2,11 +2,24 @@
   "name": "claude-code-dev",
   "private": true,
   "type": "module",
+  "packageManager": "bun@1.3.14",
+  "engines": {
+    "node": ">=20",
+    "bun": ">=1.3.14 <1.4.0"
+  },
   "bin": {
     "claude-local": "scripts/claude-local.mjs"
   },
   "scripts": {
     "cli": "bun src/entrypoints/cli.tsx",
+    "readiness": "node scripts/readiness.mjs",
+    "readiness:json": "node scripts/readiness.mjs --json",
+    "readiness:strict": "node scripts/readiness.mjs --strict",
+    "test:readiness": "node --test scripts/readiness.test.mjs",
+    "policy:lint": "node scripts/policy-lint.mjs",
+    "policy:lint:json": "node scripts/policy-lint.mjs --json",
+    "test:policy": "node --test scripts/policy-lint.test.mjs",
+    "check": "node --test scripts/readiness.test.mjs scripts/policy-lint.test.mjs && node scripts/policy-lint.mjs && node scripts/readiness.mjs --strict",
     "collect-deps": "node scripts/collect-npm-deps.mjs",
     "generate-sdk-core-types": "node scripts/emit-core-types.mjs",
     "generate-sdk-control-types": "node scripts/emit-control-types.mjs"
