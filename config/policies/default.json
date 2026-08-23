@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "defaultProfile": "balanced",
+  "profiles": {
+    "safe": {
+      "description": "Read-heavy development with confirmation for mutations, shell commands and approved provider network access.",
+      "filesystem": {
+        "outsideProject": "deny",
+        "read": [
+          "**"
+        ],
+        "write": [
+          ".github/**",
+          "config/**",
+          "docs/**",
+          "package.json",
+          "README.md",
+          "scripts/**",
+          "src/**",
+          "tests/**"
+        ],
+        "deny": [
+          ".env",
+          ".env.*",
+          ".git/**",
+          "**/*.pem",
+          "**/*.p12",
+          "**/id_rsa",
+          "~/.aws/**",
+          "~/.config/gcloud/**",
+          "~/.ssh/**"
+        ]
+      },
+      "shell": {
+        "defaultDecision": "confirm",
+        "allow": [
+          "bun run policy:lint*",
+          "bun run readiness*",
+          "git diff*",
+          "git log*",
+          "git status*",
+          "node --test*"
+        ],
+        "deny": [
+          "chmod -R 777*",
+          "curl *|*sh*",
+          "git clean -fdx*",
+          "git push --force*",
+          "rm -rf /*",
+          "sudo *",
+          "wget *|*sh*"
+        ]
+      },
+      "network": {
+        "defaultDecision": "deny",
+        "allowHosts": [
+          "api.anthropic.com",
+          "api.openai.com",
+          "openrouter.ai"
+        ],
+        "denyHosts": [
+          "169.254.169.254",
+          "metadata.google.internal"
+        ],
+        "denyPrivateRanges": true
+      },
+      "tools": {
+        "defaultDecision": "confirm",
+        "rules": [
+          {
+            "tool": "Glob",
+            "decision": "allow"
+          },
+          {
+            "tool": "Grep",
+            "decision": "allow"
+          },
+          {
+            "tool": "Read",
+            "decision": "allow"
+          },
+          {
+            "tool": "Bash",
+            "decision": "confirm"
+          },
+          {
+            "tool": "Edit",
+            "decision": "confirm"
+          },
+          {
+            "tool": "Write",
+            "decision": "confirm"
+          }
+        ]
+      }
+    },
+    "balanced": {
+      "description": "Default development profile with automatic project-local edits, guarded shell execution and explicit network allowlists.",
+      "filesystem": {
+        "outsideProject": "deny",
+        "read": [
+          "**"
+        ],
+        "write": [
+          ".github/**",
+          "config/**",
+          "docs/**",
+          "package.json",
+          "README.md",
+          "scripts/**",
+          "src/**",
+          "tests/**"
+        ],
+        "deny": [
+          ".env",
+          ".env.*",
+          ".git/**",
+          "**/*.pem",
+          "**/*.p12",
+          "**/id_rsa",
+          "~/.aws/**",
+          "~/.config/gcloud/**",
+          "~/.ssh/**"
+        ]
+      },
+      "shell": {
+        "defaultDecision": "confirm",
+        "allow": [
+          "bun install --frozen-lockfile*",
+          "bun run *",
+          "git diff*",
+          "git log*",
+          "git status*",
+          "node --test*"
+        ],
+        "deny": [
+          "chmod -R 777*",
+          "curl *|*sh*",
+          "git clean -fdx*",
+          "git push --force*",
+          "rm -rf /*",
+          "sudo *",
+          "wget *|*sh*"
+        ]
+      },
+      "network": {
+        "defaultDecision": "deny",
+        "allowHosts": [
+          "api.anthropic.com",
+          "api.github.com",
+          "api.openai.com",
+          "github.com",
+          "openrouter.ai",
+          "registry.npmjs.org"
+        ],
+        "denyHosts": [
+          "169.254.169.254",
+          "metadata.google.internal"
+        ],
+        "denyPrivateRanges": true
+      },
+      "tools": {
+        "defaultDecision": "confirm",
+        "rules": [
+          {
+            "tool": "Glob",
+            "decision": "allow"
+          },
+          {
+            "tool": "Grep",
+            "decision": "allow"
+          },
+          {
+            "tool": "Read",
+            "decision": "allow"
+          },
+          {
+            "tool": "Edit",
+            "decision": "allow",
+            "when": "path is inside filesystem.write and outside filesystem.deny"
+          },
+          {
+            "tool": "Write",
+            "decision": "allow",
+            "when": "path is inside filesystem.write and outside filesystem.deny"
+          },
+          {
+            "tool": "Bash",
+            "decision": "confirm"
+          },
+          {
+            "tool": "WebFetch",
+            "decision": "confirm"
+          },
+          {
+            "tool": "WebSearch",
+            "decision": "confirm"
+          }
+        ]
+      }
+    },
+    "autonomous": {
+      "description": "High-throughput project-local execution with immutable credential guards, explicit network destinations and destructive-command denials.",
+      "filesystem": {
+        "outsideProject": "deny",
+        "read": [
+          "**"
+        ],
+        "write": [
+          "**"
+        ],
+        "deny": [
+          ".env",
+          ".env.*",
+          ".git/**",
+          "**/*.pem",
+          "**/*.p12",
+          "**/id_rsa",
+          "~/.aws/**",
+          "~/.config/gcloud/**",
+          "~/.ssh/**"
+        ]
+      },
+      "shell": {
+        "defaultDecision": "allow",
+        "allow": [
+          "bun *",
+          "git *",
+          "node *",
+          "npm *",
+          "npx *"
+        ],
+        "deny": [
+          "chmod -R 777*",
+          "curl *|*sh*",
+          "git clean -fdx*",
+          "git push --force*",
+          "rm -rf /*",
+          "sudo *",
+          "wget *|*sh*"
+        ]
+      },
+      "network": {
+        "defaultDecision": "deny",
+        "allowHosts": [
+          "api.anthropic.com",
+          "api.github.com",
+          "api.openai.com",
+          "github.com",
+          "objects.githubusercontent.com",
+          "openrouter.ai",
+          "registry.npmjs.org"
+        ],
+        "denyHosts": [
+          "169.254.169.254",
+          "metadata.google.internal"
+        ],
+        "denyPrivateRanges": true
+      },
+      "tools": {
+        "defaultDecision": "allow",
+        "rules": [
+          {
+            "tool": "Bash",
+            "decision": "allow",
+            "when": "command does not match shell.deny"
+          },
+          {
+            "tool": "Edit",
+            "decision": "allow",
+            "when": "path is inside project and outside filesystem.deny"
+          },
+          {
+            "tool": "Write",
+            "decision": "allow",
+            "when": "path is inside project and outside filesystem.deny"
+          },
+          {
+            "tool": "WebFetch",
+            "decision": "allow",
+            "when": "host is inside network.allowHosts"
+          },
+          {
+            "tool": "WebSearch",
+            "decision": "allow"
+          }
+        ]
+      }
+    }
+  }
+}
